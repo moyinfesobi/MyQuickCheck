@@ -1,15 +1,26 @@
+import axios from 'axios';
+
 export const fetchTopStories = async (page, pageSize) => {
-    const topStoryIds = await fetch(
+  try {
+    // Fetch top story IDs
+    const { data: topStoryIds } = await axios.get(
       'https://hacker-news.firebaseio.com/v0/topstories.json'
-    ).then((res) => res.json());
-  
-    const storyDetails = await Promise.all(
-      topStoryIds.slice(page * pageSize, (page + 1) * pageSize).map((id) =>
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((res) =>
-          res.json()
-        )
-      )
     );
-  
+
+    // Fetch details for the selected stories
+    const storyDetails = await Promise.all(
+      topStoryIds
+        .slice(page * pageSize, (page + 1) * pageSize)
+        .map((id) =>
+          axios
+            .get(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
+            .then((response) => response.data)
+        )
+    );
+
     return storyDetails;
-  };
+  } catch (error) {
+    console.error('Error fetching stories:', error);
+    throw error;
+  }
+};

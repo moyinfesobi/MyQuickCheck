@@ -1,6 +1,6 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import * as SQLite from 'expo-sqlite/legacy';
 
 // Open the SQLite database
@@ -10,10 +10,9 @@ const LoginScreen = () => {
   // State variables
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation(); // Hook for navigation
 
-
-
-//   Create table if it doesn't exist
+  // Create table if it doesn't exist
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -53,7 +52,7 @@ const LoginScreen = () => {
     });
   };
 
-//   Log in user
+  // Log in user
   const loginUser = () => {
     if (!username || !password) {
       Alert.alert('Error', 'Please enter both username and password.');
@@ -69,6 +68,7 @@ const LoginScreen = () => {
             Alert.alert('Success', `Welcome, ${username}!`);
             setUsername('');
             setPassword('');
+            navigation.navigate('Home'); // Navigate to HomeScreen
           } else {
             Alert.alert('Error', 'Invalid username or password.');
           }
@@ -85,7 +85,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login / Register</Text>
-       <TextInput
+      <TextInput
         style={styles.input}
         placeholder="Username"
         value={username}
